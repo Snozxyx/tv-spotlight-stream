@@ -150,9 +150,10 @@ All colors MUST be HSL.
 
   /* TV Focus styles */
   .tv-focused {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-focus);
-    outline: 2px solid hsl(var(--focus-glow));
+    transform: scale(1.05) !important;
+    box-shadow: var(--shadow-focus) !important;
+    outline: 2px solid hsl(var(--focus-glow)) !important;
+    z-index: 10;
   }
 
   /* Animation keyframes */
