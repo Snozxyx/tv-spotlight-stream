@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Play, Info, ArrowLeft, ArrowRight } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { useHomePageData } from '@/hooks/useAnimeData';
-import { extractDominantColors, applyDynamicTheme, resetToDefaultTheme } from '@/utils/colorExtraction';
+import { extractDominantColors, applyDynamicTheme, resetToDefaultTheme, formatRating } from '@/utils/colorExtraction';
 import { SpotlightAnime, BasicAnime } from '@/services/api';
 
 interface FocusableCardProps {
@@ -46,6 +47,8 @@ const Index = () => {
   const [sidebarFocusedItem, setSidebarFocusedItem] = useState<string>('home');
   const [currentSpotlightIndex, setCurrentSpotlightIndex] = useState(0);
   const [top10Period, setTop10Period] = useState<'today' | 'week' | 'month'>('today');
+  
+  const navigate = useNavigate();
   
   const heroRef = useRef<HTMLDivElement>(null);
   const top10Ref = useRef<HTMLDivElement>(null);
@@ -348,8 +351,10 @@ const Index = () => {
   }, []);
 
   const handleInfoPress = useCallback(() => {
-    console.log('More Info pressed');
-  }, []);
+    if (currentSpotlight?.id) {
+      navigate(`/anime/${currentSpotlight.id}`);
+    }
+  }, [currentSpotlight?.id, navigate]);
 
   const handleCardPress = useCallback((index: number) => {
     console.log(`Anime card ${index} selected:`, popularAnimes[index]?.name);
@@ -421,59 +426,59 @@ const Index = () => {
             <div className="container mx-auto px-8">
               <div className="max-w-2xl">
                 {/* Animated Badge */}
-                <div className="mb-6 animate-slide-up" style={{animationDelay: '0.2s'}}>
-                  <span className="px-4 py-2 bg-primary/20 text-primary font-semibold rounded-lg backdrop-blur-sm animate-glow-pulse">
+                <div className="mb-6 animate-fade-slide-in" style={{animationDelay: '0.2s'}}>
+                  <span className="px-4 py-2 bg-gradient-dynamic text-white font-semibold rounded-lg backdrop-blur-sm animate-glow-pulse border border-white/20">
                     #{currentSpotlight?.rank || 1} Spotlight
                   </span>
                 </div>
                 
                 {/* Animated Title */}
-                <h1 className="text-6xl md:text-8xl font-bold text-foreground mb-6 leading-tight animate-slide-up" style={{animationDelay: '0.4s'}}>
+                <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-tight animate-fade-slide-in" style={{animationDelay: '0.4s'}}>
                   {currentSpotlight?.name?.split(' ').slice(0, 2).join(' ') || 'Featured'}{' '}
-                  <span className="bg-gradient-primary bg-clip-text text-transparent animate-gradient-shift">
+                  <span className="bg-gradient-dynamic bg-clip-text text-transparent animate-gradient-shift">
                     {currentSpotlight?.name?.split(' ').slice(2).join(' ') || 'Anime'}
                   </span>
                 </h1>
                 
                 {/* Japanese Name */}
                 {currentSpotlight?.jname && (
-                  <p className="text-lg text-muted-foreground mb-4 animate-slide-up" style={{animationDelay: '0.5s'}}>
+                  <p className="text-lg mb-4 animate-fade-slide-in" style={{animationDelay: '0.5s', color: 'hsl(var(--dynamic-text) / 0.8)'}}>
                     {currentSpotlight.jname}
                   </p>
                 )}
                 
                 {/* Animated Description */}
-                <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-lg animate-slide-up line-clamp-3" style={{animationDelay: '0.6s'}}>
+                <p className="text-xl mb-8 leading-relaxed max-w-lg animate-fade-slide-in line-clamp-3" style={{animationDelay: '0.6s', color: 'hsl(var(--dynamic-text) / 0.9)'}}>
                   {currentSpotlight?.description || 'Discover amazing anime content with stunning visuals and compelling storylines.'}
                 </p>
                 
                 {/* Animated Rating & Info */}
-                <div className="flex items-center gap-6 mb-10 text-lg animate-slide-up" style={{animationDelay: '0.8s'}}>
+                <div className="flex items-center gap-6 mb-10 text-lg animate-fade-slide-in" style={{animationDelay: '0.8s'}}>
                   {currentSpotlight?.otherInfo && (
                     <>
                       <div className="flex items-center gap-2">
-                        <span className="text-primary font-bold">★ {8.5 + Math.random() * 1.5}</span>
-                        <span className="text-muted-foreground">Rating</span>
+                        <span className="font-bold" style={{color: 'hsl(var(--dynamic-primary))'}}>★ {formatRating(8.5 + Math.random() * 1.5)}</span>
+                        <span style={{color: 'hsl(var(--dynamic-text) / 0.8)'}}>Rating</span>
                       </div>
                       {currentSpotlight.otherInfo.map((info, index) => (
-                        <div key={index} className="text-muted-foreground">{info}</div>
+                        <div key={index} style={{color: 'hsl(var(--dynamic-text) / 0.8)'}}>{info}</div>
                       ))}
                     </>
                   )}
                   {currentSpotlight?.episodes && (
-                    <div className="text-muted-foreground">
+                    <div style={{color: 'hsl(var(--dynamic-text) / 0.8)'}}>
                       {currentSpotlight.episodes.sub + currentSpotlight.episodes.dub} Episodes
                     </div>
                   )}
                 </div>
                 
                 {/* Animated Action Buttons */}
-                <div className="flex items-center gap-6 animate-slide-up" style={{animationDelay: '1s'}}>
+                <div className="flex items-center gap-6 animate-fade-slide-in" style={{animationDelay: '1s'}}>
                   <FocusableCard
                     focused={focusedElement === 'watch-button'}
                     onFocus={() => setFocusedElement('watch-button')}
                     onEnter={handleWatchPress}
-                    className="flex items-center gap-3 px-12 py-6 bg-gradient-primary text-primary-foreground rounded-lg font-semibold text-xl transition-all duration-300 hover:scale-105"
+                    className="flex items-center gap-3 px-12 py-6 bg-gradient-dynamic text-white rounded-lg font-semibold text-xl btn-hover-enhanced"
                   >
                     <Play className="w-6 h-6" />
                     Watch Now
@@ -483,7 +488,7 @@ const Index = () => {
                     focused={focusedElement === 'info-button'}
                     onFocus={() => setFocusedElement('info-button')}
                     onEnter={handleInfoPress}
-                    className="flex items-center gap-3 px-12 py-6 bg-secondary text-secondary-foreground border border-border rounded-lg font-semibold text-xl transition-all duration-300 hover:scale-105"
+                    className="flex items-center gap-3 px-12 py-6 bg-secondary/20 border border-white/30 rounded-lg font-semibold text-xl btn-hover-enhanced backdrop-blur-sm text-white"
                   >
                     <Info className="w-6 h-6" />
                     More Info
@@ -492,24 +497,24 @@ const Index = () => {
                 
                 {/* Spotlight Navigation Indicators */}
                 {spotlightAnimes.length > 1 && (
-                  <div className="mt-8 flex items-center gap-2 animate-slide-up" style={{animationDelay: '1.1s'}}>
+                  <div className="mt-8 flex items-center gap-2 animate-fade-slide-in" style={{animationDelay: '1.1s'}}>
                     {spotlightAnimes.map((_, index) => (
                       <div
                         key={index}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                          index === currentSpotlightIndex ? 'bg-primary' : 'bg-primary/30'
+                          index === currentSpotlightIndex ? 'bg-gradient-dynamic' : 'bg-white/30'
                         }`}
                       />
                     ))}
-                    <span className="ml-4 text-sm text-muted-foreground">
+                    <span className="ml-4 text-sm" style={{color: 'hsl(var(--dynamic-text) / 0.7)'}}>
                       Use ↑↓ or Page Up/Down to navigate spotlight
                     </span>
                   </div>
                 )}
                 
                 {/* Animated Navigation Hint */}
-                <div className="mt-12 animate-slide-up" style={{animationDelay: '1.2s'}}>
-                  <div className="flex items-center gap-2 text-muted-foreground text-lg">
+                <div className="mt-12 animate-fade-slide-in" style={{animationDelay: '1.2s'}}>
+                  <div className="flex items-center gap-2 text-lg" style={{color: 'hsl(var(--dynamic-text) / 0.8)'}}>
                     <span>Press</span>
                     <ChevronDown className="w-5 h-5 animate-bounce" />
                     <span>to browse top 10 anime</span>
@@ -521,7 +526,7 @@ const Index = () => {
           
           {/* Animated Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-float">
-            <div className="flex flex-col items-center text-muted-foreground">
+            <div className="flex flex-col items-center" style={{color: 'hsl(var(--dynamic-text) / 0.8)'}}>
               <span className="text-sm mb-2">Scroll down</span>
               <ChevronDown className="w-6 h-6 animate-bounce" />
             </div>
