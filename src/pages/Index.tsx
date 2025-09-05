@@ -164,9 +164,147 @@ const Index = () => {
             setFocusedElement(`card-${nextIndex}`);
             break;
           case 'ArrowUp':
-            setCurrentSection('hero');
-            setFocusedElement('watch-button');
-            scrollToSection('hero');
+            setCurrentSection('top10');
+            setFocusedElement('top10-tab-today');
+            scrollToSection('top10');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('latest');
+            setFocusedElement('latest-card-0');
+            scrollToSection('latest');
+            break;
+        }
+      } else if (currentSection === 'latest') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevLatestIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : latestEpisodeAnimes.length - 1;
+            setFocusedCardIndex(prevLatestIndex);
+            setFocusedElement(`latest-card-${prevLatestIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextLatestIndex = focusedCardIndex < latestEpisodeAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextLatestIndex);
+            setFocusedElement(`latest-card-${nextLatestIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('popular');
+            setFocusedElement('card-0');
+            scrollToSection('popular');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('airing');
+            setFocusedElement('airing-card-0');
+            scrollToSection('airing');
+            break;
+        }
+      } else if (currentSection === 'airing') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevAiringIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : topAiringAnimes.length - 1;
+            setFocusedCardIndex(prevAiringIndex);
+            setFocusedElement(`airing-card-${prevAiringIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextAiringIndex = focusedCardIndex < topAiringAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextAiringIndex);
+            setFocusedElement(`airing-card-${nextAiringIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('latest');
+            setFocusedElement('latest-card-0');
+            scrollToSection('latest');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('upcoming');
+            setFocusedElement('upcoming-card-0');
+            scrollToSection('upcoming');
+            break;
+        }
+      } else if (currentSection === 'upcoming') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevUpcomingIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : topUpcomingAnimes.length - 1;
+            setFocusedCardIndex(prevUpcomingIndex);
+            setFocusedElement(`upcoming-card-${prevUpcomingIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextUpcomingIndex = focusedCardIndex < topUpcomingAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextUpcomingIndex);
+            setFocusedElement(`upcoming-card-${nextUpcomingIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('airing');
+            setFocusedElement('airing-card-0');
+            scrollToSection('airing');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('trending');
+            setFocusedElement('trending-card-0');
+            scrollToSection('trending');
+            break;
+        }
+      } else if (currentSection === 'trending') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevTrendingIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : trendingAnimes.length - 1;
+            setFocusedCardIndex(prevTrendingIndex);
+            setFocusedElement(`trending-card-${prevTrendingIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextTrendingIndex = focusedCardIndex < trendingAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextTrendingIndex);
+            setFocusedElement(`trending-card-${nextTrendingIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('upcoming');
+            setFocusedElement('upcoming-card-0');
+            scrollToSection('upcoming');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('favorite');
+            setFocusedElement('favorite-card-0');
+            scrollToSection('favorite');
+            break;
+        }
+      } else if (currentSection === 'favorite') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevFavoriteIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : mostFavoriteAnimes.length - 1;
+            setFocusedCardIndex(prevFavoriteIndex);
+            setFocusedElement(`favorite-card-${prevFavoriteIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextFavoriteIndex = focusedCardIndex < mostFavoriteAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextFavoriteIndex);
+            setFocusedElement(`favorite-card-${nextFavoriteIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('trending');
+            setFocusedElement('trending-card-0');
+            scrollToSection('trending');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('completed');
+            setFocusedElement('completed-card-0');
+            scrollToSection('completed');
+            break;
+        }
+      } else if (currentSection === 'completed') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            const prevCompletedIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : latestCompletedAnimes.length - 1;
+            setFocusedCardIndex(prevCompletedIndex);
+            setFocusedElement(`completed-card-${prevCompletedIndex}`);
+            break;
+          case 'ArrowRight':
+            const nextCompletedIndex = focusedCardIndex < latestCompletedAnimes.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextCompletedIndex);
+            setFocusedElement(`completed-card-${nextCompletedIndex}`);
+            break;
+          case 'ArrowUp':
+            setCurrentSection('favorite');
+            setFocusedElement('favorite-card-0');
+            scrollToSection('favorite');
             break;
         }
       } else if (currentSection === 'top10') {
@@ -199,7 +337,7 @@ const Index = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length, top10Period]);
+  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length, top10Period, latestEpisodeAnimes.length, topAiringAnimes.length, topUpcomingAnimes.length, trendingAnimes.length, mostFavoriteAnimes.length, latestCompletedAnimes.length]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -636,6 +774,683 @@ const Index = () => {
               </div>
               <p className="text-sm text-muted-foreground mt-2">
                 Showing {popularAnimes.length} popular anime • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Latest Episodes Section */}
+        <section ref={latestRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          {/* Dynamic background based on focused card */}
+          {focusedCardIndex >= 0 && latestEpisodeAnimes[focusedCardIndex] && (
+            <div className="absolute inset-0 opacity-20">
+              <img
+                src={latestEpisodeAnimes[focusedCardIndex]?.poster}
+                alt=""
+                className="w-full h-full object-cover blur-2xl scale-110 transition-all duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background" />
+            </div>
+          )}
+          
+          <div className="container mx-auto px-8 relative z-10">
+            {/* Section Header */}
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Latest <span className="bg-gradient-primary bg-clip-text text-transparent">Episodes</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Recently updated anime with new episodes
+              </p>
+            </div>
+            
+            {/* Navigation Arrows */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <ArrowLeft className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" />
+                <span>Navigate cards</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <ChevronDown className="w-5 h-5 rotate-180" />
+                <span>Back to popular</span>
+              </div>
+            </div>
+          
+            {/* Scrollable Cards Container */}
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {latestEpisodeAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'latest' && focusedElement === `latest-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`latest-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      {/* New Episode Badge */}
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-red-500 text-white rounded-full text-xs font-bold animate-pulse">
+                          NEW
+                        </span>
+                      </div>
+                      
+                      {/* Dynamic Gradient Overlay */}
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      {/* Enhanced Content */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                {anime.type}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Play
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            {/* Navigation Hint */}
+            <div className="mt-8 text-center">
+              <div className="flex items-center justify-center gap-8 text-muted-foreground text-lg">
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5" />
+                  <span>Navigate cards</span>
+                </div>
+                <span>•</span>
+                <span>Press Enter to select</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {latestEpisodeAnimes.length} latest episodes • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Top Airing Section */}
+        <section ref={airingRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          {/* Dynamic background based on focused card */}
+          {focusedCardIndex >= 0 && topAiringAnimes[focusedCardIndex] && (
+            <div className="absolute inset-0 opacity-20">
+              <img
+                src={topAiringAnimes[focusedCardIndex]?.poster}
+                alt=""
+                className="w-full h-full object-cover blur-2xl scale-110 transition-all duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background" />
+            </div>
+          )}
+          
+          <div className="container mx-auto px-8 relative z-10">
+            {/* Section Header */}
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Top <span className="bg-gradient-primary bg-clip-text text-transparent">Airing</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Currently airing anime series
+              </p>
+            </div>
+            
+            {/* Navigation Arrows */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <ArrowLeft className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" />
+                <span>Navigate cards</span>
+              </div>
+            </div>
+          
+            {/* Scrollable Cards Container */}
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {topAiringAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'airing' && focusedElement === `airing-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`airing-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      {/* Live Badge */}
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold flex items-center gap-1">
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                          LIVE
+                        </span>
+                      </div>
+                      
+                      {/* Dynamic Gradient Overlay */}
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      {/* Enhanced Content */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                {anime.type}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Play
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            {/* Navigation Hint */}
+            <div className="mt-8 text-center">
+              <div className="flex items-center justify-center gap-8 text-muted-foreground text-lg">
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5" />
+                  <span>Navigate cards</span>
+                </div>
+                <span>•</span>
+                <span>Press Enter to select</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {topAiringAnimes.length} airing anime • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Top Upcoming Section */}
+        <section ref={upcomingRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-background to-cyan-500/5" />
+          
+          <div className="container mx-auto px-8 relative z-10">
+            {/* Section Header */}
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Top <span className="bg-gradient-primary bg-clip-text text-transparent">Upcoming</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Most anticipated upcoming anime releases
+              </p>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {topUpcomingAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'upcoming' && focusedElement === `upcoming-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`upcoming-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-bold">
+                          UPCOMING
+                        </span>
+                      </div>
+                      
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                {anime.type}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Notify Me
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Showing {topUpcomingAnimes.length} upcoming anime • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Trending Section */}
+        <section ref={trendingRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-background to-red-500/5" />
+          
+          <div className="container mx-auto px-8 relative z-10">
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Trending <span className="bg-gradient-primary bg-clip-text text-transparent">Anime</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Currently trending and viral anime series
+              </p>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {trendingAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'trending' && focusedElement === `trending-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`trending-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-orange-500 text-white rounded-full text-xs font-bold animate-pulse">
+                          TRENDING
+                        </span>
+                      </div>
+                      
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                Rank #{anime.rank}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Play
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Showing {trendingAnimes.length} trending anime • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Most Favorite Section */}
+        <section ref={favoriteRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-background to-purple-500/5" />
+          
+          <div className="container mx-auto px-8 relative z-10">
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Most <span className="bg-gradient-primary bg-clip-text text-transparent">Favorite</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Community's most beloved anime series
+              </p>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {mostFavoriteAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'favorite' && focusedElement === `favorite-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`favorite-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-pink-500 text-white rounded-full text-xs font-bold flex items-center gap-1">
+                          ❤️ FAVORITE
+                        </span>
+                      </div>
+                      
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                {anime.type}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Play
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Showing {mostFavoriteAnimes.length} favorite anime • Current Focus: {focusedElement}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Latest Completed Section */}
+        <section ref={completedRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-background to-teal-500/5" />
+          
+          <div className="container mx-auto px-8 relative z-10">
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Latest <span className="bg-gradient-primary bg-clip-text text-transparent">Completed</span>
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Recently finished anime series ready to binge
+              </p>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {latestCompletedAnimes.map((anime, index) => {
+                const isFocused = currentSection === 'completed' && focusedElement === `completed-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`completed-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-emerald-500 text-white rounded-full text-xs font-bold">
+                          COMPLETED
+                        </span>
+                      </div>
+                      
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                {anime.type}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Binge Watch
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </FocusableCard>
+                );
+              })}
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Showing {latestCompletedAnimes.length} completed anime • Current Focus: {focusedElement}
               </p>
             </div>
           </div>
