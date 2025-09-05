@@ -437,14 +437,14 @@ const Index = () => {
                 {/* Animated Title */}
                 <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-tight animate-fade-slide-in" style={{animationDelay: '0.4s'}}>
                   {currentSpotlight?.name?.split(' ').slice(0, 2).join(' ') || 'Featured'}{' '}
-                  <span className="bg-gradient-dynamic bg-clip-text text-transparent animate-gradient-shift">
+                  <span className="text-white">
                     {currentSpotlight?.name?.split(' ').slice(2).join(' ') || 'Anime'}
                   </span>
                 </h1>
                 
                 {/* Japanese Name */}
                 {currentSpotlight?.jname && (
-                  <p className="text-lg mb-4 animate-fade-slide-in" style={{animationDelay: '0.5s', color: 'hsl(var(--dynamic-text) / 0.8)'}}>
+                  <p className="text-lg mb-4 animate-fade-slide-in text-white" style={{animationDelay: '0.5s'}}>
                     {currentSpotlight.jname}
                   </p>
                 )}
