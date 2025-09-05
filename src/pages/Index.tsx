@@ -40,14 +40,22 @@ const FocusableCard: React.FC<FocusableCardProps> = ({
 
 const Index = () => {
   const [focusedElement, setFocusedElement] = useState<string>('watch-button');
-  const [currentSection, setCurrentSection] = useState<'hero' | 'popular'>('hero');
+  const [currentSection, setCurrentSection] = useState<'hero' | 'top10' | 'popular' | 'latest' | 'airing' | 'upcoming' | 'trending' | 'favorite' | 'completed'>('hero');
   const [focusedCardIndex, setFocusedCardIndex] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarFocusedItem, setSidebarFocusedItem] = useState<string>('home');
   const [currentSpotlightIndex, setCurrentSpotlightIndex] = useState(0);
+  const [top10Period, setTop10Period] = useState<'today' | 'week' | 'month'>('today');
   
   const heroRef = useRef<HTMLDivElement>(null);
+  const top10Ref = useRef<HTMLDivElement>(null);
   const popularRef = useRef<HTMLDivElement>(null);
+  const latestRef = useRef<HTMLDivElement>(null);
+  const airingRef = useRef<HTMLDivElement>(null);
+  const upcomingRef = useRef<HTMLDivElement>(null);
+  const trendingRef = useRef<HTMLDivElement>(null);
+  const favoriteRef = useRef<HTMLDivElement>(null);
+  const completedRef = useRef<HTMLDivElement>(null);
 
   // Fetch real data from API
   const { data: homePageData, isLoading, error } = useHomePageData();
@@ -55,7 +63,15 @@ const Index = () => {
   // Extract data from API response
   const spotlightAnimes = homePageData?.data?.spotlightAnimes || [];
   const popularAnimes = homePageData?.data?.mostPopularAnimes || [];
+  const top10Animes = homePageData?.data?.top10Animes || { today: [], week: [], month: [] };
+  const latestEpisodeAnimes = homePageData?.data?.latestEpisodeAnimes || [];
+  const topAiringAnimes = homePageData?.data?.topAiringAnimes || [];
+  const topUpcomingAnimes = homePageData?.data?.topUpcomingAnimes || [];
+  const trendingAnimes = homePageData?.data?.trendingAnimes || [];
+  const mostFavoriteAnimes = homePageData?.data?.mostFavoriteAnimes || [];
+  const latestCompletedAnimes = homePageData?.data?.latestCompletedAnimes || [];
   const currentSpotlight = spotlightAnimes[currentSpotlightIndex];
+  const currentTop10 = top10Animes[top10Period] || [];
 
   // Apply dynamic theme based on current spotlight anime
   useEffect(() => {
@@ -85,11 +101,22 @@ const Index = () => {
   }, [spotlightAnimes.length]);
 
   // Smooth scroll to section
-  const scrollToSection = (section: 'hero' | 'popular') => {
-    if (section === 'hero' && heroRef.current) {
-      heroRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'popular' && popularRef.current) {
-      popularRef.current.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection = (section: typeof currentSection) => {
+    const refs = {
+      hero: heroRef,
+      top10: top10Ref,
+      popular: popularRef,
+      latest: latestRef,
+      airing: airingRef,
+      upcoming: upcomingRef,
+      trending: trendingRef,
+      favorite: favoriteRef,
+      completed: completedRef
+    };
+    
+    const targetRef = refs[section];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -107,9 +134,9 @@ const Index = () => {
             setFocusedElement(focusedElement === 'info-button' ? 'watch-button' : 'info-button');
             break;
           case 'ArrowDown':
-            setCurrentSection('popular');
-            setFocusedElement('card-0');
-            scrollToSection('popular');
+            setCurrentSection('top10');
+            setFocusedElement('top10-tab-today');
+            scrollToSection('top10');
             break;
           case 'ArrowUp':
             // Navigate to previous spotlight anime
@@ -142,12 +169,37 @@ const Index = () => {
             scrollToSection('hero');
             break;
         }
+      } else if (currentSection === 'top10') {
+        switch (e.key) {
+          case 'ArrowLeft':
+            // Navigate between tabs
+            if (top10Period === 'today') setTop10Period('month');
+            else if (top10Period === 'week') setTop10Period('today');
+            else if (top10Period === 'month') setTop10Period('week');
+            break;
+          case 'ArrowRight':
+            // Navigate between tabs
+            if (top10Period === 'today') setTop10Period('week');
+            else if (top10Period === 'week') setTop10Period('month');
+            else if (top10Period === 'month') setTop10Period('today');
+            break;
+          case 'ArrowUp':
+            setCurrentSection('hero');
+            setFocusedElement('watch-button');
+            scrollToSection('hero');
+            break;
+          case 'ArrowDown':
+            setCurrentSection('popular');
+            setFocusedElement('card-0');
+            scrollToSection('popular');
+            break;
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length]);
+  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length, top10Period]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -322,7 +374,7 @@ const Index = () => {
                   <div className="flex items-center gap-2 text-muted-foreground text-lg">
                     <span>Press</span>
                     <ChevronDown className="w-5 h-5 animate-bounce" />
-                    <span>to browse popular anime</span>
+                    <span>to browse top 10 anime</span>
                   </div>
                 </div>
               </div>
@@ -334,6 +386,124 @@ const Index = () => {
             <div className="flex flex-col items-center text-muted-foreground">
               <span className="text-sm mb-2">Scroll down</span>
               <ChevronDown className="w-6 h-6 animate-bounce" />
+            </div>
+          </div>
+        </section>
+
+        {/* Top 10 Section */}
+        <section ref={top10Ref} className="min-h-screen bg-background py-16 relative overflow-hidden">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+          
+          <div className="container mx-auto px-8 relative z-10">
+            {/* Section Header */}
+            <div className="mb-12 animate-slide-up">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                Top <span className="bg-gradient-primary bg-clip-text text-transparent">10</span> Anime
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                The highest ranked anime across different time periods
+              </p>
+            </div>
+            
+            {/* Period Tabs */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <ArrowLeft className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" />
+                <span>Switch periods</span>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 mb-8">
+              {(['today', 'week', 'month'] as const).map((period) => (
+                <button
+                  key={period}
+                  onClick={() => setTop10Period(period)}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                    top10Period === period
+                      ? 'bg-primary text-primary-foreground shadow-lg'
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  }`}
+                >
+                  {period.charAt(0).toUpperCase() + period.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Top 10 Ranked List */}
+            <div className="grid gap-4 max-w-4xl">
+              {currentTop10.slice(0, 10).map((anime, index) => (
+                <div
+                  key={`${anime.id}-${index}`}
+                  className={`flex items-center gap-6 p-4 rounded-xl bg-card hover:bg-card/80 transition-all duration-300 ${
+                    currentSection === 'top10' ? 'ring-2 ring-primary/20' : ''
+                  }`}
+                >
+                  {/* Rank Number */}
+                  <div className="flex-shrink-0">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl ${
+                      index < 3
+                        ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black'
+                        : 'bg-gradient-to-br from-secondary to-secondary/60 text-foreground'
+                    }`}>
+                      {index + 1}
+                    </div>
+                  </div>
+                  
+                  {/* Anime Poster */}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={anime.poster}
+                      alt={anime.name}
+                      className="w-20 h-28 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.src = '/default-anime.jpg';
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Anime Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-1">
+                      {anime.name}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>Sub: {anime.episodes.sub}</span>
+                      {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                      <span className="px-2 py-1 bg-primary/20 text-primary rounded">
+                        Rank #{anime.rank}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2">
+                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                      <Play className="w-4 h-4" />
+                    </button>
+                    <button className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                      <Info className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Navigation Hint */}
+            <div className="mt-8 text-center">
+              <div className="flex items-center justify-center gap-8 text-muted-foreground text-lg">
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5" />
+                  <span>Switch periods</span>
+                </div>
+                <span>•</span>
+                <span>↓ Popular Anime</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing top {currentTop10.length} {top10Period} • Current Focus: {focusedElement}
+              </p>
             </div>
           </div>
         </section>
