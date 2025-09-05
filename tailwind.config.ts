@@ -52,6 +52,11 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// TV Streaming Colors
+				'focus-glow': 'hsl(var(--focus-glow))',
+				'card-hover': 'hsl(var(--card-hover))',
+				'hero-start': 'hsl(var(--hero-gradient-start))',
+				'hero-end': 'hsl(var(--hero-gradient-end))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -67,6 +72,18 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-focus': 'var(--gradient-focus)',
+				'gradient-overlay': 'var(--gradient-overlay)'
+			},
+			boxShadow: {
+				'focus': 'var(--shadow-focus)',
+				'card': 'var(--shadow-card)'
+			},
+			transitionTimingFunction: {
+				'focus': 'var(--transition-focus)'
 			},
 			keyframes: {
 				'accordion-down': {

@@ -1,5 +1,9 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactTV, { renderOnAppLoaded } from 'react-tv';
+import { withFocusable, withNavigation } from 'react-tv-navigation';
+import StreamingApp from './StreamingApp';
+import './index.css';
 
-createRoot(document.getElementById("root")!).render(<App />);
+const AppWithNavigation = renderOnAppLoaded(withNavigation(StreamingApp));
+
+ReactTV.render(<AppWithNavigation />, document.querySelector('#root'));
