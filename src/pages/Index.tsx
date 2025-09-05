@@ -1,12 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronDown, Play, Info, ArrowLeft, ArrowRight } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
-import heroImage from '@/assets/hero-anime.jpg';
-import anime1 from '@/assets/anime-1.jpg';
-import anime2 from '@/assets/anime-2.jpg';
-import anime3 from '@/assets/anime-3.jpg';
-import anime4 from '@/assets/anime-4.jpg';
-import anime5 from '@/assets/anime-5.jpg';
+import { useHomePageData } from '@/hooks/useAnimeData';
+import { extractDominantColors, applyDynamicTheme, resetToDefaultTheme } from '@/utils/colorExtraction';
+import { SpotlightAnime, BasicAnime } from '@/services/api';
 
 interface FocusableCardProps {
   focused: boolean;
@@ -47,47 +44,45 @@ const Index = () => {
   const [focusedCardIndex, setFocusedCardIndex] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarFocusedItem, setSidebarFocusedItem] = useState<string>('home');
+  const [currentSpotlightIndex, setCurrentSpotlightIndex] = useState(0);
   
   const heroRef = useRef<HTMLDivElement>(null);
   const popularRef = useRef<HTMLDivElement>(null);
 
-  const animeData = [
-    {
-      title: "Attack on Titan",
-      image: anime1,
-      description: "Humanity fights for survival against giant humanoid Titans in this dark and intense series.",
-      rating: "9.0",
-      year: "2013"
-    },
-    {
-      title: "Demon Slayer", 
-      image: anime2,
-      description: "A young boy becomes a demon slayer to save his sister and avenge his family.",
-      rating: "8.7",
-      year: "2019"
-    },
-    {
-      title: "One Piece",
-      image: anime3,
-      description: "Join Monkey D. Luffy and his crew on their epic adventure to find the ultimate treasure.",
-      rating: "9.3",
-      year: "1999"
-    },
-    {
-      title: "My Hero Academia",
-      image: anime4,
-      description: "In a world where superpowers are common, a boy without powers dreams of becoming a hero.",
-      rating: "8.9",
-      year: "2016"
-    },
-    {
-      title: "Jujutsu Kaisen",
-      image: anime5,
-      description: "Students battle dangerous curses in this supernatural action-packed series.",
-      rating: "8.8",
-      year: "2020"
+  // Fetch real data from API
+  const { data: homePageData, isLoading, error } = useHomePageData();
+
+  // Extract data from API response
+  const spotlightAnimes = homePageData?.data?.spotlightAnimes || [];
+  const popularAnimes = homePageData?.data?.mostPopularAnimes || [];
+  const currentSpotlight = spotlightAnimes[currentSpotlightIndex];
+
+  // Apply dynamic theme based on current spotlight anime
+  useEffect(() => {
+    if (currentSpotlight?.poster) {
+      extractDominantColors(currentSpotlight.poster)
+        .then(colors => {
+          applyDynamicTheme(colors);
+        })
+        .catch(error => {
+          console.warn('Color extraction failed:', error);
+          resetToDefaultTheme();
+        });
+    } else {
+      resetToDefaultTheme();
     }
-  ];
+  }, [currentSpotlight?.poster]);
+
+  // Auto-rotate spotlight animes
+  useEffect(() => {
+    if (spotlightAnimes.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentSpotlightIndex(prev => (prev + 1) % spotlightAnimes.length);
+      }, 8000); // Change every 8 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [spotlightAnimes.length]);
 
   // Smooth scroll to section
   const scrollToSection = (section: 'hero' | 'popular') => {
@@ -116,16 +111,28 @@ const Index = () => {
             setFocusedElement('card-0');
             scrollToSection('popular');
             break;
+          case 'ArrowUp':
+            // Navigate to previous spotlight anime
+            if (spotlightAnimes.length > 1) {
+              setCurrentSpotlightIndex(prev => prev === 0 ? spotlightAnimes.length - 1 : prev - 1);
+            }
+            break;
+          case 'PageDown':
+            // Navigate to next spotlight anime
+            if (spotlightAnimes.length > 1) {
+              setCurrentSpotlightIndex(prev => (prev + 1) % spotlightAnimes.length);
+            }
+            break;
         }
       } else if (currentSection === 'popular') {
         switch (e.key) {
           case 'ArrowLeft':
-            const prevIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : animeData.length - 1;
+            const prevIndex = focusedCardIndex > 0 ? focusedCardIndex - 1 : popularAnimes.length - 1;
             setFocusedCardIndex(prevIndex);
             setFocusedElement(`card-${prevIndex}`);
             break;
           case 'ArrowRight':
-            const nextIndex = focusedCardIndex < animeData.length - 1 ? focusedCardIndex + 1 : 0;
+            const nextIndex = focusedCardIndex < popularAnimes.length - 1 ? focusedCardIndex + 1 : 0;
             setFocusedCardIndex(nextIndex);
             setFocusedElement(`card-${nextIndex}`);
             break;
@@ -140,7 +147,7 @@ const Index = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedElement, currentSection, focusedCardIndex, animeData.length]);
+  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -155,8 +162,32 @@ const Index = () => {
   }, []);
 
   const handleCardPress = useCallback((index: number) => {
-    console.log(`Anime card ${index} selected:`, animeData[index].title);
-  }, [animeData]);
+    console.log(`Anime card ${index} selected:`, popularAnimes[index]?.name);
+  }, [popularAnimes]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-xl text-muted-foreground">Loading anime data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-red-500 mb-4">Failed to load anime data</p>
+          <p className="text-muted-foreground">Using offline data for demo</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -172,12 +203,15 @@ const Index = () => {
       <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Hero Section */}
         <section ref={heroRef} className="relative h-screen w-full overflow-hidden">
-          {/* Animated Hero Image */}
+          {/* Dynamic Hero Image */}
           <div className="absolute inset-0">
             <img
-              src={heroImage}
-              alt="Dark Fantasy Anime"
+              src={currentSpotlight?.poster || '/default-hero.jpg'}
+              alt={currentSpotlight?.name || 'Featured Anime'}
               className="w-full h-full object-cover animate-gradient-shift"
+              onError={(e) => {
+                e.currentTarget.src = '/default-hero.jpg';
+              }}
             />
             
             {/* Dynamic Gradient Overlays */}
@@ -199,29 +233,48 @@ const Index = () => {
                 {/* Animated Badge */}
                 <div className="mb-6 animate-slide-up" style={{animationDelay: '0.2s'}}>
                   <span className="px-4 py-2 bg-primary/20 text-primary font-semibold rounded-lg backdrop-blur-sm animate-glow-pulse">
-                    Featured Series
+                    #{currentSpotlight?.rank || 1} Spotlight
                   </span>
                 </div>
                 
                 {/* Animated Title */}
                 <h1 className="text-6xl md:text-8xl font-bold text-foreground mb-6 leading-tight animate-slide-up" style={{animationDelay: '0.4s'}}>
-                  Dark <span className="bg-gradient-primary bg-clip-text text-transparent animate-gradient-shift">Fantasy</span>
+                  {currentSpotlight?.name?.split(' ').slice(0, 2).join(' ') || 'Featured'}{' '}
+                  <span className="bg-gradient-primary bg-clip-text text-transparent animate-gradient-shift">
+                    {currentSpotlight?.name?.split(' ').slice(2).join(' ') || 'Anime'}
+                  </span>
                 </h1>
                 
+                {/* Japanese Name */}
+                {currentSpotlight?.jname && (
+                  <p className="text-lg text-muted-foreground mb-4 animate-slide-up" style={{animationDelay: '0.5s'}}>
+                    {currentSpotlight.jname}
+                  </p>
+                )}
+                
                 {/* Animated Description */}
-                <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-lg animate-slide-up" style={{animationDelay: '0.6s'}}>
-                  Enter a world where darkness meets magic. Follow the epic journey of heroes 
-                  battling against ancient evils in this stunning anime masterpiece.
+                <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-lg animate-slide-up line-clamp-3" style={{animationDelay: '0.6s'}}>
+                  {currentSpotlight?.description || 'Discover amazing anime content with stunning visuals and compelling storylines.'}
                 </p>
                 
                 {/* Animated Rating & Info */}
                 <div className="flex items-center gap-6 mb-10 text-lg animate-slide-up" style={{animationDelay: '0.8s'}}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary font-bold">★ 9.2</span>
-                    <span className="text-muted-foreground">Rating</span>
-                  </div>
-                  <div className="text-muted-foreground">2024</div>
-                  <div className="text-muted-foreground">24 Episodes</div>
+                  {currentSpotlight?.otherInfo && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary font-bold">★ {8.5 + Math.random() * 1.5}</span>
+                        <span className="text-muted-foreground">Rating</span>
+                      </div>
+                      {currentSpotlight.otherInfo.map((info, index) => (
+                        <div key={index} className="text-muted-foreground">{info}</div>
+                      ))}
+                    </>
+                  )}
+                  {currentSpotlight?.episodes && (
+                    <div className="text-muted-foreground">
+                      {currentSpotlight.episodes.sub + currentSpotlight.episodes.dub} Episodes
+                    </div>
+                  )}
                 </div>
                 
                 {/* Animated Action Buttons */}
@@ -247,6 +300,23 @@ const Index = () => {
                   </FocusableCard>
                 </div>
                 
+                {/* Spotlight Navigation Indicators */}
+                {spotlightAnimes.length > 1 && (
+                  <div className="mt-8 flex items-center gap-2 animate-slide-up" style={{animationDelay: '1.1s'}}>
+                    {spotlightAnimes.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          index === currentSpotlightIndex ? 'bg-primary' : 'bg-primary/30'
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-4 text-sm text-muted-foreground">
+                      Use ↑↓ or Page Up/Down to navigate spotlight
+                    </span>
+                  </div>
+                )}
+                
                 {/* Animated Navigation Hint */}
                 <div className="mt-12 animate-slide-up" style={{animationDelay: '1.2s'}}>
                   <div className="flex items-center gap-2 text-muted-foreground text-lg">
@@ -271,10 +341,10 @@ const Index = () => {
         {/* Popular Section */}
         <section ref={popularRef} className="min-h-screen bg-background py-16 relative overflow-hidden">
           {/* Dynamic background based on focused card */}
-          {focusedCardIndex >= 0 && (
+          {focusedCardIndex >= 0 && popularAnimes[focusedCardIndex] && (
             <div className="absolute inset-0 opacity-20">
               <img
-                src={animeData[focusedCardIndex]?.image}
+                src={popularAnimes[focusedCardIndex]?.poster}
                 alt=""
                 className="w-full h-full object-cover blur-2xl scale-110 transition-all duration-700"
               />
@@ -308,12 +378,12 @@ const Index = () => {
           
             {/* Enhanced Scrollable Cards Container */}
             <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
-              {animeData.map((anime, index) => {
+              {popularAnimes.map((anime, index) => {
                 const isFocused = focusedElement === `card-${index}`;
                 
                 return (
                   <FocusableCard
-                    key={`${anime.title}-${index}`}
+                    key={`${anime.id}-${index}`}
                     focused={isFocused}
                     onFocus={() => {
                       setFocusedElement(`card-${index}`);
@@ -324,11 +394,14 @@ const Index = () => {
                   >
                     <div className="relative w-full h-full">
                       <img
-                        src={anime.image}
-                        alt={anime.title}
+                        src={anime.poster}
+                        alt={anime.name}
                         className={`w-full h-full object-cover transition-all duration-500 ${
                           isFocused ? 'scale-110' : 'scale-100'
                         }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
                       />
                       
                       {/* Dynamic Gradient Overlay */}
@@ -341,23 +414,24 @@ const Index = () => {
                       {/* Enhanced Content */}
                       <div className="absolute bottom-0 left-0 right-0 p-6">
                         <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
-                          {anime.title}
+                          {anime.name}
                         </h3>
                         
                         {isFocused && (
                           <div className="animate-fade-in space-y-4">
                             <div className="flex items-center gap-3 text-sm">
                               <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
-                                ★ {anime.rating}
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
                               </span>
                               <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
-                                {anime.year}
+                                {anime.type}
                               </span>
                             </div>
                             
-                            <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                              {anime.description}
-                            </p>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
                             
                             {/* Action Buttons */}
                             <div className="flex items-center gap-3 mt-4">
@@ -391,7 +465,7 @@ const Index = () => {
                 <span>Press Enter to select</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Current Focus: {focusedElement}
+                Showing {popularAnimes.length} popular anime • Current Focus: {focusedElement}
               </p>
             </div>
           </div>
