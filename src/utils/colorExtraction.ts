@@ -4,6 +4,8 @@ export interface DominantColors {
   primary: string;
   secondary: string;
   accent: string;
+  textColor: string;
+  overlayColor: string;
 }
 
 // Simple color extraction using canvas (fallback method)
@@ -21,7 +23,9 @@ export const extractDominantColors = async (imageUrl: string): Promise<DominantC
         resolve({
           primary: 'hsl(263, 70%, 50%)',
           secondary: 'hsl(290, 70%, 25%)',
-          accent: 'hsl(280, 60%, 40%)'
+          accent: 'hsl(280, 60%, 40%)',
+          textColor: 'hsl(0, 0%, 98%)',
+          overlayColor: 'hsl(240, 10%, 3.9%)'
         });
         return;
       }
@@ -40,7 +44,9 @@ export const extractDominantColors = async (imageUrl: string): Promise<DominantC
         resolve({
           primary: 'hsl(263, 70%, 50%)',
           secondary: 'hsl(290, 70%, 25%)',
-          accent: 'hsl(280, 60%, 40%)'
+          accent: 'hsl(280, 60%, 40%)',
+          textColor: 'hsl(0, 0%, 98%)',
+          overlayColor: 'hsl(240, 10%, 3.9%)'
         });
       }
     };
@@ -50,7 +56,9 @@ export const extractDominantColors = async (imageUrl: string): Promise<DominantC
       resolve({
         primary: 'hsl(263, 70%, 50%)',
         secondary: 'hsl(290, 70%, 25%)',
-        accent: 'hsl(280, 60%, 40%)'
+        accent: 'hsl(280, 60%, 40%)',
+        textColor: 'hsl(0, 0%, 98%)',
+        overlayColor: 'hsl(240, 10%, 3.9%)'
       });
     };
     
@@ -62,6 +70,8 @@ export const extractDominantColors = async (imageUrl: string): Promise<DominantC
 const extractColorsFromImageData = (imageData: ImageData): DominantColors => {
   const data = imageData.data;
   const colorMap = new Map<string, number>();
+  let avgBrightness = 0;
+  let pixelCount = 0;
   
   // Sample pixels (every 10th pixel for performance)
   for (let i = 0; i < data.length; i += 40) {
@@ -73,15 +83,24 @@ const extractColorsFromImageData = (imageData: ImageData): DominantColors => {
     // Skip transparent pixels
     if (a < 128) continue;
     
+    // Calculate brightness for text contrast
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    avgBrightness += brightness;
+    pixelCount++;
+    
     // Convert to HSL for better color analysis
     const hsl = rgbToHsl(r, g, b);
     
-    // Skip very dark or very light colors
+    // Skip very dark or very light colors for primary extraction
     if (hsl.l < 0.1 || hsl.l > 0.9) continue;
     
     const key = `${Math.round(hsl.h)}-${Math.round(hsl.s * 100)}-${Math.round(hsl.l * 100)}`;
     colorMap.set(key, (colorMap.get(key) || 0) + 1);
   }
+  
+  // Calculate average brightness for text color decision
+  avgBrightness = pixelCount > 0 ? avgBrightness / pixelCount : 128;
+  const isDarkImage = avgBrightness < 128;
   
   // Get the most frequent colors
   const sortedColors = Array.from(colorMap.entries())
@@ -96,7 +115,9 @@ const extractColorsFromImageData = (imageData: ImageData): DominantColors => {
     return {
       primary: 'hsl(263, 70%, 50%)',
       secondary: 'hsl(290, 70%, 25%)',
-      accent: 'hsl(280, 60%, 40%)'
+      accent: 'hsl(280, 60%, 40%)',
+      textColor: isDarkImage ? 'hsl(0, 0%, 98%)' : 'hsl(0, 0%, 10%)',
+      overlayColor: isDarkImage ? 'hsl(240, 10%, 3.9%)' : 'hsl(0, 0%, 98%)'
     };
   }
   
@@ -107,11 +128,31 @@ const extractColorsFromImageData = (imageData: ImageData): DominantColors => {
     Math.abs(c.h - primary.h) > 60 && Math.abs(c.h - secondary.h) > 30
   ) || sortedColors[2] || secondary;
   
+  // Ensure good contrast for text
+  const textColor = getContrastingTextColor(primary, isDarkImage);
+  const overlayColor = isDarkImage ? 'hsl(240, 10%, 3.9%)' : 'hsl(0, 0%, 98%)';
+  
   return {
     primary: `hsl(${primary.h}, ${Math.max(60, primary.s * 100)}%, ${Math.min(60, Math.max(40, primary.l * 100))}%)`,
     secondary: `hsl(${secondary.h}, ${Math.max(50, secondary.s * 100)}%, ${Math.min(40, Math.max(20, secondary.l * 100))}%)`,
-    accent: `hsl(${accent.h}, ${Math.max(40, accent.s * 100)}%, ${Math.min(70, Math.max(30, accent.l * 100))}%)`
+    accent: `hsl(${accent.h}, ${Math.max(40, accent.s * 100)}%, ${Math.min(70, Math.max(30, accent.l * 100))}%)`,
+    textColor,
+    overlayColor
   };
+};
+
+// Get contrasting text color for readability
+const getContrastingTextColor = (primaryColor: { h: number; s: number; l: number }, isDarkImage: boolean): string => {
+  // If the primary color is very light, use dark text
+  if (primaryColor.l > 0.7) {
+    return 'hsl(0, 0%, 10%)';
+  }
+  // If the primary color is very dark, use light text
+  if (primaryColor.l < 0.3) {
+    return 'hsl(0, 0%, 98%)';
+  }
+  // For medium lightness, use the image's overall brightness
+  return isDarkImage ? 'hsl(0, 0%, 98%)' : 'hsl(0, 0%, 10%)';
 };
 
 // RGB to HSL conversion
@@ -149,21 +190,39 @@ export const applyDynamicTheme = (colors: DominantColors) => {
   // Extract HSL values
   const primaryMatch = colors.primary.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
   const secondaryMatch = colors.secondary.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+  const accentMatch = colors.accent.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+  const textMatch = colors.textColor.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
   
   if (primaryMatch) {
     const [, h, s, l] = primaryMatch;
     root.style.setProperty('--hero-gradient-start', `${h} ${s}% ${l}%`);
     root.style.setProperty('--focus-glow', `${h} ${s}% ${l}%`);
+    root.style.setProperty('--dynamic-primary', `${h} ${s}% ${l}%`);
   }
   
   if (secondaryMatch) {
     const [, h, s, l] = secondaryMatch;
     root.style.setProperty('--hero-gradient-end', `${h} ${s}% ${l}%`);
+    root.style.setProperty('--dynamic-secondary', `${h} ${s}% ${l}%`);
   }
   
-  // Update gradient
+  if (accentMatch) {
+    const [, h, s, l] = accentMatch;
+    root.style.setProperty('--dynamic-accent', `${h} ${s}% ${l}%`);
+  }
+  
+  if (textMatch) {
+    const [, h, s, l] = textMatch;
+    root.style.setProperty('--dynamic-text', `${h} ${s}% ${l}%`);
+  }
+  
+  // Update gradients
   root.style.setProperty('--gradient-primary', 
     `linear-gradient(135deg, hsl(var(--hero-gradient-start)), hsl(var(--hero-gradient-end)))`
+  );
+  
+  root.style.setProperty('--gradient-dynamic', 
+    `linear-gradient(135deg, hsl(var(--dynamic-primary)), hsl(var(--dynamic-secondary)))`
   );
 };
 
@@ -173,7 +232,19 @@ export const resetToDefaultTheme = () => {
   root.style.setProperty('--hero-gradient-start', '263 70% 50%');
   root.style.setProperty('--hero-gradient-end', '290 70% 25%');
   root.style.setProperty('--focus-glow', '263 70% 50%');
+  root.style.setProperty('--dynamic-primary', '263 70% 50%');
+  root.style.setProperty('--dynamic-secondary', '290 70% 25%');
+  root.style.setProperty('--dynamic-accent', '280 60% 40%');
+  root.style.setProperty('--dynamic-text', '0 0% 98%');
   root.style.setProperty('--gradient-primary', 
     'linear-gradient(135deg, hsl(var(--hero-gradient-start)), hsl(var(--hero-gradient-end)))'
   );
+  root.style.setProperty('--gradient-dynamic', 
+    'linear-gradient(135deg, hsl(var(--dynamic-primary)), hsl(var(--dynamic-secondary)))'
+  );
+};
+
+// Format rating to 1 decimal place
+export const formatRating = (rating: number): string => {
+  return rating.toFixed(1);
 };

@@ -28,9 +28,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        'fixed left-0 top-0 h-full bg-card/50 backdrop-blur-lg border-r border-border transition-all duration-300 z-50',
+        'fixed left-0 top-0 h-full bg-card/60 backdrop-blur-xl border-r border-border transition-all duration-500 ease-in-out z-50',
+        'shadow-2xl',
         isCollapsed ? 'w-16' : 'w-64'
       )}
+      style={{
+        background: 'linear-gradient(145deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.4))',
+        backdropFilter: 'blur(20px)',
+      }}
     >
       {/* Sidebar Content */}
       <div className="flex flex-col h-full p-4">
@@ -47,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <Play className="w-5 h-5 text-primary-foreground" />
             </div>
             {!isCollapsed && (
-              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent transition-all duration-500 opacity-100 animate-fade-slide-in">
                 AnimeStream
               </h1>
             )}
@@ -83,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     />
                     {!isCollapsed && (
                       <span className={cn(
-                        'text-sm font-medium transition-all duration-300',
+                        'text-sm font-medium transition-all duration-500 animate-fade-slide-in',
                         isFocused && 'text-primary'
                       )}>
                         {item.label}
