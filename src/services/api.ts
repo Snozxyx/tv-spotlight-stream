@@ -152,12 +152,73 @@ const MOCK_HOME_DATA: HomePageData = {
           rank: 3
         }
       ],
-      month: [],
-      week: []
+      month: [
+        {
+          episodes: { sub: 87, dub: 84 },
+          id: "attack-on-titan-112",
+          name: "Attack on Titan",
+          poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-C6FPmWm59CyP.jpg",
+          rank: 1
+        },
+        {
+          episodes: { sub: 44, dub: 34 },
+          id: "demon-slayer-kimetsu-no-yaiba-55",
+          name: "Demon Slayer: Kimetsu no Yaiba",
+          poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101922-PEn1CTc93blC.jpg",
+          rank: 2
+        }
+      ],
+      week: [
+        {
+          episodes: { sub: 24, dub: 24 },
+          id: "jujutsu-kaisen-tv-22199",
+          name: "Jujutsu Kaisen",
+          poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113415-bbBWj4pEFseh.jpg",
+          rank: 1
+        }
+      ]
     },
-    topAiringAnimes: [],
-    topUpcomingAnimes: [],
-    trendingAnimes: [],
+    topAiringAnimes: [
+      {
+        id: "spy-x-family-23289",
+        name: "Spy x Family",
+        poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx140960-V3QpsAU4CWzi.jpg",
+        type: "TV",
+        episodes: { sub: 25, dub: 25 }
+      },
+      {
+        id: "kaguya-sama-wa-kokurasetai-101921",
+        name: "Kaguya-sama: Love is War",
+        poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101921-VrZ0LNSlPFCW.jpg",
+        type: "TV",
+        episodes: { sub: 36, dub: 24 }
+      }
+    ],
+    topUpcomingAnimes: [
+      {
+        id: "tower-of-god-season-2-168187",
+        name: "Tower of God Season 2",
+        poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx168187-kEFqEQRGwu8x.jpg",
+        type: "TV",
+        episodes: { sub: 0, dub: 0 }
+      }
+    ],
+    trendingAnimes: [
+      {
+        id: "wind-breaker-171745",
+        name: "Wind Breaker",
+        poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx171745-ZRHE0n5RKtbf.jpg",
+        type: "TV",
+        episodes: { sub: 13, dub: 0 }
+      },
+      {
+        id: "kaiju-no-8-170001",
+        name: "Kaiju No. 8",
+        poster: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx170001-0MiP1Wa3vE7a.jpg",
+        type: "TV",
+        episodes: { sub: 12, dub: 12 }
+      }
+    ],
     mostPopularAnimes: [
       {
         id: "attack-on-titan-112",
