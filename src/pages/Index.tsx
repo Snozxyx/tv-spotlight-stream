@@ -138,7 +138,8 @@ const Index = () => {
             break;
           case 'ArrowDown':
             setCurrentSection('top10');
-            setFocusedElement('top10-tab-today');
+            setFocusedElement('top10-card-0');
+            setFocusedCardIndex(0);
             scrollToSection('top10');
             break;
           case 'ArrowUp':
@@ -168,7 +169,8 @@ const Index = () => {
             break;
           case 'ArrowUp':
             setCurrentSection('top10');
-            setFocusedElement('top10-tab-today');
+            setFocusedElement('top10-card-0');
+            setFocusedCardIndex(0);
             scrollToSection('top10');
             break;
           case 'ArrowDown':
@@ -313,16 +315,16 @@ const Index = () => {
       } else if (currentSection === 'top10') {
         switch (e.key) {
           case 'ArrowLeft':
-            // Navigate between tabs
-            if (top10Period === 'today') setTop10Period('month');
-            else if (top10Period === 'week') setTop10Period('today');
-            else if (top10Period === 'month') setTop10Period('week');
+            // Navigate between cards
+            const prevTop10Index = focusedCardIndex > 0 ? focusedCardIndex - 1 : currentTop10.length - 1;
+            setFocusedCardIndex(prevTop10Index);
+            setFocusedElement(`top10-card-${prevTop10Index}`);
             break;
           case 'ArrowRight':
-            // Navigate between tabs
-            if (top10Period === 'today') setTop10Period('week');
-            else if (top10Period === 'week') setTop10Period('month');
-            else if (top10Period === 'month') setTop10Period('today');
+            // Navigate between cards
+            const nextTop10Index = focusedCardIndex < currentTop10.length - 1 ? focusedCardIndex + 1 : 0;
+            setFocusedCardIndex(nextTop10Index);
+            setFocusedElement(`top10-card-${nextTop10Index}`);
             break;
           case 'ArrowUp':
             setCurrentSection('hero');
@@ -340,7 +342,7 @@ const Index = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length, top10Period, latestEpisodeAnimes.length, topAiringAnimes.length, topUpcomingAnimes.length, trendingAnimes.length, mostFavoriteAnimes.length, latestCompletedAnimes.length]);
+  }, [focusedElement, currentSection, focusedCardIndex, popularAnimes.length, spotlightAnimes.length, top10Period, latestEpisodeAnimes.length, topAiringAnimes.length, topUpcomingAnimes.length, trendingAnimes.length, mostFavoriteAnimes.length, latestCompletedAnimes.length, currentTop10.length]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -535,8 +537,17 @@ const Index = () => {
 
         {/* Top 10 Section */}
         <section ref={top10Ref} className="min-h-screen bg-background py-16 relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+          {/* Dynamic background based on focused card */}
+          {focusedCardIndex >= 0 && currentTop10[focusedCardIndex] && (
+            <div className="absolute inset-0 opacity-20">
+              <img
+                src={currentTop10[focusedCardIndex]?.poster}
+                alt=""
+                className="w-full h-full object-cover blur-2xl scale-110 transition-all duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background" />
+            </div>
+          )}
           
           <div className="container mx-auto px-8 relative z-10">
             {/* Section Header */}
@@ -554,7 +565,11 @@ const Index = () => {
               <div className="flex items-center gap-2 text-muted-foreground">
                 <ArrowLeft className="w-5 h-5" />
                 <ArrowRight className="w-5 h-5" />
-                <span>Switch periods</span>
+                <span>Navigate cards</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <ChevronDown className="w-5 h-5 rotate-180" />
+                <span>Back to hero</span>
               </div>
             </div>
             
@@ -574,78 +589,107 @@ const Index = () => {
               ))}
             </div>
 
-            {/* Top 10 Ranked List */}
-            <div className="grid gap-4 max-w-4xl">
-              {currentTop10.slice(0, 10).map((anime, index) => (
-                <div
-                  key={`${anime.id}-${index}`}
-                  className={`flex items-center gap-6 p-4 rounded-xl bg-card hover:bg-card/80 transition-all duration-300 ${
-                    currentSection === 'top10' ? 'ring-2 ring-primary/20' : ''
-                  }`}
-                >
-                  {/* Rank Number */}
-                  <div className="flex-shrink-0">
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl ${
-                      index < 3
-                        ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black'
-                        : 'bg-gradient-to-br from-secondary to-secondary/60 text-foreground'
-                    }`}>
-                      {index + 1}
+            {/* Horizontal Top 10 Cards */}
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-8">
+              {currentTop10.slice(0, 10).map((anime, index) => {
+                const isFocused = currentSection === 'top10' && focusedElement === `top10-card-${index}`;
+                
+                return (
+                  <FocusableCard
+                    key={`${anime.id}-${index}`}
+                    focused={isFocused}
+                    onFocus={() => {
+                      setFocusedElement(`top10-card-${index}`);
+                      setFocusedCardIndex(index);
+                    }}
+                    onEnter={() => handleCardPress(index)}
+                    className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-500 w-72 h-96 group"
+                  >
+                    <div className="relative w-full h-full">
+                      <img
+                        src={anime.poster}
+                        alt={anime.name}
+                        className={`w-full h-full object-cover transition-all duration-500 ${
+                          isFocused ? 'scale-110' : 'scale-100'
+                        }`}
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-anime.jpg';
+                        }}
+                      />
+                      
+                      {/* Rank Badge */}
+                      <div className="absolute top-4 left-4">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg ${
+                          index < 3
+                            ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black'
+                            : 'bg-gradient-to-br from-primary to-primary/60 text-white'
+                        }`}>
+                          {index + 1}
+                        </div>
+                      </div>
+                      
+                      {/* Dynamic Gradient Overlay */}
+                      <div className={`absolute inset-0 transition-all duration-500 ${
+                        isFocused 
+                          ? 'bg-gradient-to-t from-background via-background/60 to-transparent' 
+                          : 'bg-gradient-overlay opacity-60'
+                      }`} />
+                      
+                      {/* Enhanced Content */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                          {anime.name}
+                        </h3>
+                        
+                        {isFocused && (
+                          <div className="animate-fade-in space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="px-3 py-1 bg-primary text-primary-foreground rounded-full font-semibold animate-glow-pulse">
+                                ★ {(8.0 + Math.random() * 2).toFixed(1)}
+                              </span>
+                              <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full">
+                                Rank #{anime.rank}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span>Sub: {anime.episodes.sub}</span>
+                              {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-3 mt-4">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                <Play className="w-4 h-4" />
+                                Play
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                                <Info className="w-4 h-4" />
+                                Info
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Anime Poster */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={anime.poster}
-                      alt={anime.name}
-                      className="w-20 h-28 object-cover rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.src = '/default-anime.jpg';
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Anime Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-1">
-                      {anime.name}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Sub: {anime.episodes.sub}</span>
-                      {anime.episodes.dub > 0 && <span>Dub: {anime.episodes.dub}</span>}
-                      <span className="px-2 py-1 bg-primary/20 text-primary rounded">
-                        Rank #{anime.rank}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-2">
-                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-                      <Play className="w-4 h-4" />
-                    </button>
-                    <button className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors">
-                      <Info className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  </FocusableCard>
+                );
+              })}
             </div>
             
-            {/* Navigation Hint */}
+            {/* Enhanced Navigation Hint */}
             <div className="mt-8 text-center">
               <div className="flex items-center justify-center gap-8 text-muted-foreground text-lg">
                 <div className="flex items-center gap-2">
                   <ArrowLeft className="w-5 h-5" />
                   <ArrowRight className="w-5 h-5" />
-                  <span>Switch periods</span>
+                  <span>Navigate cards</span>
                 </div>
                 <span>•</span>
-                <span>↓ Popular Anime</span>
+                <span>Press Enter to select</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Showing top {currentTop10.length} {top10Period} • Current Focus: {focusedElement}
+                Showing top {currentTop10.length} {top10Period} anime • Current Focus: {focusedElement}
               </p>
             </div>
           </div>
